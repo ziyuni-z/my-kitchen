@@ -392,14 +392,30 @@ function render() {
   $('grid').replaceChildren();
   show('empty',!filtered.length);
 
+const recipePhotos = {
+  '低温嫩烤三文鱼': 'salmon.jpg',
+  '蜂蜜蒜香烤排骨': 'ribs.jpg',
+  '咖喱牛肉乌冬面': 'udon.jpg',
+  '清爽豆腐菌菇牛肉汤': 'soup.jpg',
+  '南瓜腊肠焖饭': 'pumpkin-rice.jpg',
+  '猪肉酥皮馅饼': 'pork-pastry.jpg'
+};
+
   for(const r of filtered) {
     const card=document.createElement('article');
     card.className='recipe';
     const thumb=document.createElement('div');
     thumb.className='thumb';
-    if(r.image_url&&/^https:\/\//.test(r.image_url)) {
+    
+const photoFile = recipePhotos[r.title];
+const photoUrl = photoFile
+  ? '/my-kitchen/images/' + photoFile
+  : r.image_url;
+
+if(photoUrl && (/^https:\/\//.test(photoUrl) || photoUrl.startsWith('/'))) {
+
       const img=document.createElement('img');
-      img.src=r.image_url;
+      img.src=photoUrl;
       img.alt=r.title||'菜谱';
       img.onerror=()=>{thumb.textContent='🍲'};
       thumb.append(img);
