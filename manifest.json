@@ -1,0 +1,32 @@
+{
+  "name": "My Kitchen - 我的私人菜谱",
+  "short_name": "My Kitchen",
+  "description": "收藏喜欢的味道，让每一道家常菜都有自己的故事。",
+  "lang": "zh-CN",
+  "id": "/my-kitchen/",
+  "start_url": "/my-kitchen/",
+  "scope": "/my-kitchen/",
+  "display": "standalone",
+  "background_color": "#FAF7F1",
+  "theme_color": "#41664E",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
