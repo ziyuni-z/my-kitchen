@@ -1,5 +1,14 @@
 <!doctype html>
 <html lang="zh-CN"><head>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/my-kitchen/sw.js')
+        .then(() => console.log('My Kitchen PWA ready'))
+        .catch(error => console.error('SW error:', error));
+    });
+  }
+</script>
 <link rel="manifest" href="/my-kitchen/manifest.json">
 <meta name="theme-color" content="#41664E">
 <link rel="icon" type="image/png" href="/my-kitchen/icons/icon-192.png"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Kitchen · 私人菜谱</title><style>
