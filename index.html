@@ -11,8 +11,8 @@
 <dialog id="editor"><div class="dialog-inner"><div class="topline"><h2 id="editorTitle">添加菜谱</h2><button class="secondary" onclick="document.getElementById('editor').close()">关闭</button></div><form id="recipeForm"><label>菜名</label><input id="fTitle" required><label>分类</label><input id="fCategory" placeholder="例如：家常菜"><label>食材</label><textarea id="fIngredients"></textarea><label>步骤</label><textarea id="fInstructions"></textarea><label>备注</label><textarea id="fNotes"></textarea><label>图片网址（可选）</label><input id="fImage" type="url"><button type="submit">保存菜谱</button></form></div></dialog>
 <script type="module">
 // 请只替换以下两项。Project URL 和 publishable/anon key 可以用于浏览器；绝不能填 secret/service_role key。
-const SUPABASE_URL = 'PASTE_YOUR_SUPABASE_PROJECT_URL_HERE';
-const SUPABASE_KEY = 'PASTE_YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY_HERE';
+const SUPABASE_URL = 'https://uqmxkrscmjwyjcxoobfp.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_OX_X89pqkprWJYmO-BtpPA_FVruez_9';
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 const $=id=>document.getElementById(id), show=(id,yes)=>$(id).classList.toggle('hidden',!yes);
 const configured=SUPABASE_URL.startsWith('https://')&&!SUPABASE_KEY.startsWith('PASTE_');
