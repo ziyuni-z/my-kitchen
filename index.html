@@ -1,531 +1,168 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#586D59">
-<title>My Kitchen · 私人菜谱</title>
-<link rel="manifest" href="/my-kitchen/manifest.json">
-<link rel="icon" type="image/png" href="/my-kitchen/icons/icon-192.png">
-
+<html lang="zh-CN"><head>
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/my-kitchen/sw.js')
-      .then(() => console.log('My Kitchen PWA ready'))
-      .catch(error => console.error('SW error:', error));
-  });
-}
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/my-kitchen/sw.js')
+        .then(() => console.log('My Kitchen PWA ready'))
+        .catch(error => console.error('SW error:', error));
+    });
+  }
 </script>
+<link rel="manifest" href="/my-kitchen/manifest.json">
+<meta name="theme-color" content="#586D59">
+<link rel="icon" type="image/png" href="/my-kitchen/icons/icon-192.png"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Kitchen · 私人菜谱</title><style>
 
-<style>
-:root {
-  --cream:#f8f5ee;
-  --sage:#586d59;
-  --pale:#e9ede4;
-  --ink:#453c34;
-  --gold:#c8ad86;
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  color:var(--ink);
-  background:var(--cream);
-}
-* {box-sizing:border-box}
-body {margin:0}
-button,input,select,textarea {font:inherit}
-button {
-  cursor:pointer;
-  border:0;
-  border-radius:999px;
-  padding:12px 19px;
-  background:var(--sage);
-  color:white;
-}
-button.secondary {background:#e9ede4;color:var(--sage)}
-button.danger {background:#9b4d45}
-header {
-  padding:24px max(22px,calc((100vw - 1120px)/2));
-  background:#fffdf9;
-  border-bottom:1px solid #eae5dc;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-h1,h2,h3 {font-family:Georgia,'Times New Roman',serif}
-h1 {
-  font-size:38px;
-  letter-spacing:-1px;
-  color:var(--sage);
-  margin:0;
-}
-small,.muted {color:#827a70}
-.wrap {max-width:1120px;margin:auto;padding:28px 22px}
-.hero {
-  background:linear-gradient(120deg,#e7ece2,#f6efe4);
-  border-radius:24px;
-  padding:42px;
-  margin-bottom:32px;
-  border:1px solid #e6e6db;
-}
-.eyebrow {
-  font-size:11px;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color:var(--sage);
-  font-weight:700;
-}
-.hero h2 {
-  font-size:clamp(28px,4vw,44px);
-  margin:12px 0;
-}
-.hero p {color:#6f7669;margin:0;line-height:1.7}
-.topline {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-.topline h2 {font-size:27px}
-.controls {
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin:18px 0 25px;
-}
-input,select,textarea {
-  border:1px solid #dfdbd2;
-  border-radius:12px;
-  padding:13px;
-  background:#fffdf9;
-  max-width:100%;
-}
-input[type=search] {flex:1;min-width:190px}
-.grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(235px,1fr));
-  gap:20px;
-}
-.recipe {
-  background:#fffdf9;
-  border:1px solid #ebe5da;
-  border-radius:19px;
-  overflow:hidden;
-  cursor:pointer;
-  box-shadow:0 5px 22px #453c340b;
-  transition:transform .2s,box-shadow .2s;
-}
-.recipe:hover {
-  transform:translateY(-3px);
-  box-shadow:0 12px 30px #453c3417;
-}
-.thumb {
-  height:185px;
-  background:linear-gradient(135deg,#e3e9dc,#f2e4d5);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:62px;
-}
-.thumb img {width:100%;height:100%;object-fit:cover}
-.content {padding:18px}
-.content h3 {margin:11px 0 4px;font-size:21px;font-weight:500}
-.pill {
-  display:inline-block;
-  background:var(--pale);
-  color:var(--sage);
-  border-radius:30px;
-  padding:6px 12px;
-  font-size:12px;
-}
-.panel {
-  max-width:520px;
-  background:#fffdf9;
-  border-radius:20px;
-  padding:30px;
-  margin:35px auto;
-  box-shadow:0 10px 35px #0000000c;
-}
-.panel input,.panel textarea,.panel select {
-  width:100%;
-  margin:6px 0 15px;
-}
-.panel textarea {min-height:105px}
-label {font-weight:600;font-size:14px}
-dialog {
-  border:0;
-  border-radius:23px;
-  padding:0;
-  max-width:min(850px,95vw);
-  width:100%;
-  max-height:90vh;
-  overflow:auto;
-  background:#fffdf9;
-  color:var(--ink);
-}
-dialog::backdrop {background:#201c18a8}
-.dialog-inner {padding:clamp(22px,4vw,42px)}
-.dialog-inner h2 {
-  font-size:clamp(28px,4vw,40px);
-  margin:18px 0;
-}
-.dialog-inner h3 {
-  font-size:23px;
-  color:var(--sage);
-  margin:27px 0 12px;
-}
-.details {white-space:pre-wrap;line-height:1.9}
-.detail-photo {
-  width:100%;
-  max-height:320px;
-  object-fit:cover;
-  border-radius:16px;
-  margin-top:20px;
-}
-.detail-columns {
-  display:grid;
-  grid-template-columns:1fr 1.25fr;
-  gap:30px;
-}
-.actions {
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:22px;
-}
-.hidden {display:none!important}
-#status {
-  padding:12px 0;
-  color:#775f3d;
-  white-space:pre-wrap;
-}
-a {color:var(--sage)}
-@media(max-width:650px) {
-  header {padding:17px 20px}
-  h1 {font-size:30px}
-  .hero {padding:27px}
-  .wrap {padding:20px 16px}
-  .grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  .thumb {height:125px}
-  .content {padding:12px}
-  .content h3 {font-size:17px}
-  .detail-columns {grid-template-columns:1fr;gap:0}
-  .topline h2 {font-size:23px}
-  button {padding:10px 13px}
-}
-</style>
-</head>
+:root{--cream:#f8f5ee;--sage:#586d59;--pale:#e9ede4;--ink:#453c34;--gold:#c8ad86;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:var(--ink);background:var(--cream)}
+*{box-sizing:border-box}body{margin:0}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:999px;padding:12px 19px;background:var(--sage);color:white}button.secondary{background:#e9ede4;color:var(--sage)}button.danger{background:#9b4d45}
+header{padding:24px max(22px,calc((100vw - 1120px)/2));background:#fffdf9;border-bottom:1px solid #eae5dc;display:flex;align-items:center;justify-content:space-between}
+h1,h2,h3{font-family:Georgia,'Times New Roman',serif}h1{font-size:38px;letter-spacing:-1px;color:var(--sage);margin:0}small,.muted{color:#827a70}.wrap{max-width:1120px;margin:auto;padding:28px 22px}
+.hero{background:linear-gradient(120deg,#e7ece2,#f6efe4);border-radius:24px;padding:30px 34px;margin-bottom:25px;border:1px solid #e6e6db}.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--sage);font-weight:700}.hero h2{font-size:clamp(28px,4vw,44px);margin:12px 0}.hero p{color:#6f7669;margin:0;line-height:1.7}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:12px}.topline h2{font-size:27px}.controls{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0 25px}
+input,select,textarea{border:1px solid #dfdbd2;border-radius:12px;padding:13px;background:#fffdf9;max-width:100%}input[type=search]{flex:1;min-width:190px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:20px}.recipe{background:#fffdf9;border:1px solid #ebe5da;border-radius:19px;overflow:hidden;cursor:pointer;box-shadow:0 5px 22px #453c340b;transition:transform .2s,box-shadow .2s}.recipe:hover{transform:translateY(-3px);box-shadow:0 12px 30px #453c3417}.thumb{height:185px;background:linear-gradient(135deg,#e3e9dc,#f2e4d5);display:flex;align-items:center;justify-content:center;font-size:62px}.thumb img{width:100%;height:100%;object-fit:cover}.content{padding:18px}.content h3{margin:11px 0 4px;font-size:21px;font-weight:500}.pill{display:inline-block;background:var(--pale);color:var(--sage);border-radius:30px;padding:6px 12px;font-size:12px}
+.panel{max-width:520px;background:#fffdf9;border-radius:20px;padding:30px;margin:35px auto;box-shadow:0 10px 35px #0000000c}.panel input,.panel textarea,.panel select{width:100%;margin:6px 0 15px}.panel textarea{min-height:105px}label{font-weight:600;font-size:14px}
+dialog{border:0;border-radius:23px;padding:0;max-width:min(850px,95vw);width:100%;max-height:90vh;overflow:auto;background:#fffdf9;color:var(--ink)}dialog::backdrop{background:#201c18a8}.dialog-inner{padding:clamp(22px,4vw,42px)}.dialog-inner h2{font-size:clamp(28px,4vw,40px);margin:18px 0}.dialog-inner h3{font-size:23px;color:var(--sage);margin:27px 0 12px}.details{white-space:pre-wrap;line-height:1.9}.detail-photo{width:100%;max-height:320px;object-fit:cover;border-radius:16px;margin-top:20px}.detail-columns{display:grid;grid-template-columns:1fr 1.25fr;gap:30px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}.hidden{display:none!important}#status{padding:12px 0;color:#775f3d;white-space:pre-wrap}a{color:var(--sage)}
+@media(max-width:650px){header{padding:17px 20px}h1{font-size:30px}.hero{padding:23px}.wrap{padding:20px 16px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.thumb{height:125px}.content{padding:12px}.content h3{font-size:17px}.detail-columns{grid-template-columns:1fr;gap:0}.topline h2{font-size:23px}button{padding:10px 13px}}
 
-<body>
-<header>
-  <div>
-    <h1>My Kitchen</h1>
-    <small>我的私人菜谱 · Made with love</small>
-  </div>
-  <button id="logout" class="secondary hidden">退出登录</button>
-</header>
 
-<main class="wrap">
-  <section class="hero">
-    <div class="eyebrow">MY PERSONAL COOKBOOK · BON APPÉTIT</div>
-    <h2>每一道菜，都值得被珍藏。</h2>
-    <p>收藏喜欢的味道，让每一道家常菜都有自己的故事。</p>
-  </section>
-
-  <div id="setup" class="panel hidden">
-    <h2>连接数据库</h2>
-    <p>请先填写 Supabase Project URL 和 publishable key。</p>
-  </div>
-
-  <section id="auth" class="panel hidden">
-    <h2>登录私人菜谱</h2>
-    <p class="muted">使用 Supabase Authentication 中的邮箱和密码。</p>
-    <form id="loginForm">
-      <label>邮箱</label>
-      <input id="email" type="email" autocomplete="email" required>
-      <label>密码</label>
-      <input id="password" type="password" autocomplete="current-password" required>
-      <button type="submit">登录</button>
-    </form>
-  </section>
-
-  <section id="app" class="hidden">
-    <div class="topline">
-      <h2>My Recipes <span id="count" class="muted"></span></h2>
-      <button id="add">＋ 添加菜谱</button>
-    </div>
-    <div class="controls">
-      <input id="search" type="search" placeholder="搜索菜名、食材或分类…">
-      <select id="category"><option value="">全部分类</option></select>
-    </div>
-    <div id="grid" class="grid"></div>
-    <p id="empty" class="muted hidden">这里还没有菜谱。</p>
-  </section>
-  <div id="status" role="status"></div>
-</main>
-
-<dialog id="detail">
-  <div class="dialog-inner">
-    <div class="topline">
-      <span id="detailCategory" class="pill"></span>
-      <button class="secondary" onclick="document.getElementById('detail').close()">关闭</button>
-    </div>
-    <h2 id="detailTitle"></h2>
-    <img id="detailPhoto" class="detail-photo hidden" alt="菜谱照片">
-    <div class="detail-columns">
-      <section>
-        <h3>Ingredients · 食材</h3>
-        <div id="detailIngredients" class="details"></div>
-      </section>
-      <section>
-        <h3>Instructions · 做法</h3>
-        <div id="detailInstructions" class="details"></div>
-      </section>
-    </div>
-    <h3>Notes · 备注</h3>
-    <div id="detailNotes" class="details"></div>
-    <div class="actions">
-      <button id="edit">编辑</button>
-      <button id="delete" class="danger">删除</button>
-    </div>
-  </div>
-</dialog>
-
-<dialog id="editor">
-  <div class="dialog-inner">
-    <div class="topline">
-      <h2 id="editorTitle">添加菜谱</h2>
-      <button class="secondary" onclick="document.getElementById('editor').close()">关闭</button>
-    </div>
-    <form id="recipeForm">
-      <label>菜名</label><input id="fTitle" required>
-      <label>分类</label><input id="fCategory">
-      <label>食材</label><textarea id="fIngredients"></textarea>
-      <label>步骤</label><textarea id="fInstructions"></textarea>
-      <label>备注</label><textarea id="fNotes"></textarea>
-      <label>图片网址（可选）</label><input id="fImage" type="url">
-      <button type="submit">保存菜谱</button>
-    </form>
-  </div>
-</dialog>
-
+/* My Kitchen 2.1 detail reading experience */
+#detail{background:#f8f5ee}
+#detail .dialog-inner{padding:clamp(20px,4vw,36px)}
+#detail .detail-photo{display:block;width:100%;max-height:360px;aspect-ratio:16/9;object-fit:cover;border-radius:17px;margin:18px 0 20px}
+#detail .detail-photo.hidden{display:none}
+#detail .detail-columns{align-items:start;gap:25px}
+#detail .detail-columns section{min-width:0}
+#detail h3{font-size:23px;margin:23px 0 14px}
+#detail .detail-card{background:#fffdf9;border:1px solid #e9e6df;border-radius:16px;padding:17px 19px}
+#detail .ingredient-row{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #f0ede7;line-height:1.7;cursor:pointer;font-size:15px}
+#detail .ingredient-row:last-child{border-bottom:0}
+#detail .ingredient-row input{width:19px;height:19px;flex-shrink:0;accent-color:#586d59;margin:4px 0 0}
+#detail .ingredient-row input:checked + span{text-decoration:line-through;color:#9a998f}
+#detail .ingredient-heading{font-weight:700;color:#586d59;margin:13px 0 4px;line-height:1.7}
+#detail .ingredient-heading:first-child{margin-top:0}
+#detail .step-row{display:flex;align-items:flex-start;gap:12px;margin:0 0 15px;line-height:1.85}
+#detail .step-number{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;background:#e9ede4;color:#586d59;border-radius:50%;font-weight:700;font-size:13px}
+#detail .step-text{flex:1;white-space:pre-wrap;overflow-wrap:anywhere}
+#detail .note-card{background:#e9ede4;border-radius:16px;padding:20px;white-space:pre-wrap;line-height:1.85;overflow-wrap:anywhere}
+#detail .detail-actions{border-top:1px solid #e5e0d6;padding-top:20px}
+@media(max-width:650px){
+  #detail{width:100vw;max-width:100vw;height:calc(100dvh - 68px);max-height:calc(100dvh - 68px);margin:auto 0 0;border-radius:23px 23px 0 0}
+  #detail .dialog-inner{padding:19px 20px 30px}
+  #detail .detail-columns{grid-template-columns:1fr;gap:0}
+  #detail .detail-photo{max-height:250px}
+  #detail h3{font-size:22px}
+}
+</style></head><body>
+<header><div><h1>My Kitchen</h1><small>我的私人菜谱 · Made with love</small></div><button id="logout" class="secondary hidden">退出登录</button></header>
+<main class="wrap"><section class="hero"><div class="eyebrow">MY PERSONAL COOKBOOK · BON APPÉTIT</div><h2>每一道菜，都值得被珍藏。</h2><p>收藏喜欢的味道，让每一道家常菜都有自己的故事。</p></section>
+<div id="setup" class="panel hidden"><h2>连接数据库</h2><p>请先在文件顶部填入 Supabase Project URL 和 publishable/anon key。不要填 service_role 或 secret key。</p></div>
+<section id="auth" class="panel hidden"><h2>登录私人菜谱</h2><p class="muted">使用在 Supabase Authentication 创建的邮箱和密码。</p><form id="loginForm"><label>邮箱</label><input id="email" type="email" autocomplete="email" required><label>密码</label><input id="password" type="password" autocomplete="current-password" required><button type="submit">登录</button></form></section>
+<section id="app" class="hidden"><div class="topline"><h2>My Recipes <span id="count" class="muted"></span></h2><button id="add">＋ 添加菜谱</button></div><div class="controls"><input id="search" type="search" placeholder="搜索菜名、食材或分类…"><select id="category"><option value="">全部分类</option></select></div><div id="grid" class="grid"></div><p id="empty" class="muted hidden">这里还没有菜谱，点击“添加菜谱”开始吧。</p></section><div id="status" role="status"></div></main>
+<dialog id="detail"><div class="dialog-inner"><div class="topline"><span id="detailCategory" class="pill"></span><button class="secondary" onclick="document.getElementById('detail').close()">关闭</button></div><h2 id="detailTitle"></h2><img id="detailPhoto" class="detail-photo hidden" alt="菜谱照片"><div class="detail-columns"><section><h3>Ingredients · 食材</h3><div id="detailIngredients" class="detail-card"></div></section><section><h3>Instructions · 做法</h3><div id="detailInstructions" class="detail-card"></div></section></div><h3>Notes · 备注</h3><div id="detailNotes" class="note-card"></div><div class="actions detail-actions"><button id="edit">编辑</button><button id="delete" class="danger">删除</button></div></div></dialog>
+<dialog id="editor"><div class="dialog-inner"><div class="topline"><h2 id="editorTitle">添加菜谱</h2><button class="secondary" onclick="document.getElementById('editor').close()">关闭</button></div><form id="recipeForm"><label>菜名</label><input id="fTitle" required><label>分类</label><input id="fCategory" placeholder="例如：家常菜"><label>食材</label><textarea id="fIngredients"></textarea><label>步骤</label><textarea id="fInstructions"></textarea><label>备注</label><textarea id="fNotes"></textarea><label>图片网址（可选）</label><input id="fImage" type="url"><button type="submit">保存菜谱</button></form></div></dialog>
 <script type="module">
+// 请只替换以下两项。Project URL 和 publishable/anon key 可以用于浏览器；绝不能填 secret/service_role key。
 const SUPABASE_URL = 'https://uqmxkrscmjwyjcxoobfp.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_OX_X89pqkprWJYmO-BtpPA_FVruez_9';
-
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-
-const $ = id => document.getElementById(id);
-const show = (id,yes) => $(id).classList.toggle('hidden',!yes);
-const configured = SUPABASE_URL.startsWith('https://') && !SUPABASE_KEY.startsWith('PASTE_');
-
+const $=id=>document.getElementById(id), show=(id,yes)=>$(id).classList.toggle('hidden',!yes);
+const configured=SUPABASE_URL.startsWith('https://')&&!SUPABASE_KEY.startsWith('PASTE_');
 let db,user,recipes=[],active=null,editing=null;
-const message = (s='') => $('status').textContent=s;
-
-if(!configured) {
-  show('setup',true);
-} else {
-  db=createClient(SUPABASE_URL,SUPABASE_KEY);
-  init();
-}
-
-async function init() {
-  const {data:{session},error}=await db.auth.getSession();
-  if(error) message(error.message);
-  await setSession(session);
-  db.auth.onAuthStateChange((_event,s)=>{setSession(s)});
-}
-
-async function setSession(session) {
-  user=session?.user||null;
-  show('auth',!user);
-  show('app',!!user);
-  show('logout',!!user);
-  if(user) await load();
-  else {recipes=[];render()}
-}
-
-$('loginForm').addEventListener('submit',async e=>{
-  e.preventDefault();
-  message('正在登录…');
-  const {error}=await db.auth.signInWithPassword({
-    email:$('email').value.trim(),
-    password:$('password').value
-  });
-  message(error?`登录失败：${error.message}`:'');
-});
-
-$('logout').onclick=async()=>{
-  const {error}=await db.auth.signOut();
-  if(error) message(error.message);
-};
-
-async function load() {
-  message('正在加载菜谱…');
-  const {data,error}=await db.from('recipes')
-    .select('*')
-    .order('created_at',{ascending:false});
-  if(error) {
-    message('加载失败：'+error.message);
-    return;
-  }
-  recipes=data||[];
-  message('');
-  render();
-}
-
-function render() {
-  const q=$('search').value.trim().toLowerCase();
-  const c=$('category').value;
-  const categories=[...new Set(recipes.map(r=>r.category).filter(Boolean))].sort();
-  $('category').innerHTML='<option value="">全部分类</option>';
-  for(const x of categories) {
-    const o=document.createElement('option');
-    o.value=x;
-    o.textContent=x;
-    $('category').append(o);
-  }
-  $('category').value=categories.includes(c)?c:'';
-  const filtered=recipes.filter(r=>
-    (!$('category').value||r.category===$('category').value)&&
-    [r.title,r.category,r.ingredients].some(v=>String(v||'').toLowerCase().includes(q))
-  );
-  $('count').textContent=`(${filtered.length})`;
-  $('grid').replaceChildren();
-  show('empty',!filtered.length);
-
+const message=(s='')=>$('status').textContent=s;
+if(!configured){show('setup',true)}else{db=createClient(SUPABASE_URL,SUPABASE_KEY);init()}
+async function init(){const {data:{session},error}=await db.auth.getSession();if(error)message(error.message);await setSession(session);db.auth.onAuthStateChange((_event,s)=>{setSession(s)})}
+async function setSession(session){user=session?.user||null;show('auth',!user);show('app',!!user);show('logout',!!user);if(user)await load();else{recipes=[];render()}}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();message('正在登录…');const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});message(error?`登录失败：${error.message}`:'')});
+$('logout').onclick=async()=>{const {error}=await db.auth.signOut();if(error)message(error.message)};
+async function load(){message('正在加载菜谱…');const {data,error}=await db.from('recipes').select('*').order('created_at',{ascending:false});if(error){message('加载失败：'+error.message);return}recipes=data||[];message('');render()}
 const recipePhotos = {
-  '低温嫩烤三文鱼': 'salmon.jpg',
-  '蜂蜜蒜香烤排骨': 'ribs.jpg',
-  '咖喱牛肉乌冬面': 'udon.jpg',
-  '清爽豆腐菌菇牛肉汤': 'soup.jpg',
-  '南瓜腊肠焖饭': 'pumpkin-rice.jpg',
-  '猪肉酥皮馅饼': 'pork-pastry.jpg'
+  '低温嫩烤三文鱼':'salmon.jpg',
+  '蜂蜜蒜香烤排骨':'ribs.jpg',
+  '咖喱牛肉乌冬面':'udon.jpg',
+  '清爽豆腐菌菇牛肉汤':'soup.jpg',
+  '南瓜腊肠焖饭':'pumpkin-rice.jpg',
+  '猪肉酥皮馅饼':'pork-pastry.jpg'
 };
-
-  for(const r of filtered) {
-    const card=document.createElement('article');
-    card.className='recipe';
-    const thumb=document.createElement('div');
-    thumb.className='thumb';
-    
-const photoFile = recipePhotos[r.title];
-const photoUrl = photoFile
-  ? '/my-kitchen/images/' + photoFile
-  : r.image_url;
-
-if(photoUrl && (/^https:\/\//.test(photoUrl) || photoUrl.startsWith('/'))) {
-
-      const img=document.createElement('img');
-      img.src=photoUrl;
-      img.alt=r.title||'菜谱';
-      img.onerror=()=>{thumb.textContent='🍲'};
+function getPhoto(r){
+  const filename=recipePhotos[String(r.title||'').trim()];
+  if(filename)return '/my-kitchen/images/'+filename;
+  return /^https:\/\//.test(r.image_url||'')?r.image_url:null;
+}
+function render(){
+  const q=$('search').value.trim().toLowerCase(),c=$('category').value;
+  const categories=[...new Set(recipes.map(r=>r.category).filter(Boolean))].sort();
+  $('category').replaceChildren(new Option('全部分类',''));
+  for(const x of categories)$('category').add(new Option(x,x));
+  $('category').value=categories.includes(c)?c:'';
+  const filtered=recipes.filter(r=>(!$('category').value||r.category===$('category').value)&&
+    [r.title,r.category,r.ingredients].some(v=>String(v||'').toLowerCase().includes(q)));
+  $('count').textContent=`(${filtered.length})`;
+  $('grid').replaceChildren();show('empty',!filtered.length);
+  for(const r of filtered){
+    const card=document.createElement('article');card.className='recipe';
+    const thumb=document.createElement('div');thumb.className='thumb';
+    const photo=getPhoto(r);
+    if(photo){
+      const img=document.createElement('img');img.src=photo;img.alt=r.title||'菜谱';
+      img.onerror=()=>{thumb.replaceChildren();thumb.textContent='🍲'};
       thumb.append(img);
-    } else {
-      thumb.textContent=({
-        '烤箱料理':'🍗',
-        '面食':'🍜',
-        '汤羹':'🥣',
-        '米饭':'🍚',
-        '烘焙点心':'🥐'
-      }[r.category]||'🍲');
-    }
-    const body=document.createElement('div');
-    body.className='content';
-    const pill=document.createElement('span');
-    pill.className='pill';
-    pill.textContent=r.category||'未分类';
-    const title=document.createElement('h3');
-    title.textContent=r.title||'未命名菜谱';
-    body.append(pill,title);
-    card.append(thumb,body);
-    card.onclick=()=>openDetail(r);
-    $('grid').append(card);
+    }else thumb.textContent=({'烤箱料理':'🍗','面食':'🍜','汤羹':'🥣','米饭':'🍚'}[r.category]||'🍲');
+    const body=document.createElement('div');body.className='content';
+    const pill=document.createElement('span');pill.className='pill';pill.textContent=r.category||'未分类';
+    const title=document.createElement('h3');title.textContent=r.title||'未命名菜谱';
+    body.append(pill,title);card.append(thumb,body);card.onclick=()=>openDetail(r);$('grid').append(card);
   }
 }
-
-$('search').oninput=render;
-$('category').onchange=render;
-
-function fill(id,value) {
-  $(id).textContent=value||'暂无';
+$('search').oninput=render;$('category').onchange=render;
+function fill(id,value){$(id).textContent=value||'暂无'}
+function splitLines(value){
+  return String(value||'').split(/\\r?\\n/).map(v=>v.trim()).filter(Boolean);
 }
-
-function openDetail(r) {
+function showIngredients(value){
+  const target=$('detailIngredients');target.replaceChildren();
+  const lines=splitLines(value);
+  if(!lines.length){target.textContent='暂无';return}
+  for(const line of lines){
+    // Keep section headings (e.g. optional sauce B) separate and readable.
+    const heading=/^(?:可选调味|调味方法|方法[AB]|配方[AB]|[一二三四]、)/.test(line) ||
+      /^(?:\\d+人份|\\d+份)$/.test(line);
+    if(heading){
+      const h=document.createElement('div');h.className='ingredient-heading';h.textContent=line;target.append(h);
+    }else{
+      const label=document.createElement('label');label.className='ingredient-row';
+      const checkbox=document.createElement('input');checkbox.type='checkbox';
+      const text=document.createElement('span');text.textContent=line;
+      label.append(checkbox,text);target.append(label);
+    }
+  }
+}
+function showInstructions(value){
+  const target=$('detailInstructions');target.replaceChildren();
+  const lines=splitLines(value);
+  if(!lines.length){target.textContent='暂无';return}
+  // Use stored line breaks. Preserve every original word, including method B.
+  lines.forEach((line,i)=>{
+    const row=document.createElement('div');row.className='step-row';
+    const num=document.createElement('span');num.className='step-number';num.textContent=i+1;
+    const text=document.createElement('div');text.className='step-text';text.textContent=line;
+    row.append(num,text);target.append(row);
+  });
+}
+function openDetail(r){
   active=r;
   fill('detailTitle',r.title);
   fill('detailCategory',r.category||'未分类');
-  fill('detailIngredients',r.ingredients);
-  fill('detailInstructions',r.instructions);
+  showIngredients(r.ingredients);
+  showInstructions(r.instructions);
   fill('detailNotes',r.notes);
-
-  const photo=$('detailPhoto');
-  if(r.image_url&&/^https:\/\//.test(r.image_url)) {
-    photo.src=r.image_url;
-    show('detailPhoto',true);
-  } else {
-    photo.removeAttribute('src');
-    show('detailPhoto',false);
-  }
+  const photo=$('detailPhoto'),url=getPhoto(r);
+  if(url){photo.src=url;photo.onerror=()=>show('detailPhoto',false);show('detailPhoto',true)}
+  else{photo.removeAttribute('src');show('detailPhoto',false)}
   $('detail').showModal();
 }
-
-function openEditor(r=null) {
-  editing=r;
-  $('editorTitle').textContent=r?'编辑菜谱':'添加菜谱';
-  for(const [id,key] of [
-    ['fTitle','title'],
-    ['fCategory','category'],
-    ['fIngredients','ingredients'],
-    ['fInstructions','instructions'],
-    ['fNotes','notes'],
-    ['fImage','image_url']
-  ]) $(id).value=r?.[key]||'';
-  $('editor').showModal();
-}
-
-$('add').onclick=()=>openEditor();
-$('edit').onclick=()=>{
-  $('detail').close();
-  openEditor(active);
-};
-
-$('recipeForm').onsubmit=async e=>{
-  e.preventDefault();
-  if(!user)return;
-  const row={
-    title:$('fTitle').value.trim(),
-    category:$('fCategory').value.trim(),
-    ingredients:$('fIngredients').value,
-    instructions:$('fInstructions').value,
-    notes:$('fNotes').value,
-    image_url:$('fImage').value.trim()||null
-  };
-  message('正在保存…');
-  let result;
-  if(editing) {
-    result=await db.from('recipes').update(row)
-      .eq('id',editing.id).eq('user_id',user.id);
-  } else {
-    result=await db.from('recipes').insert({...row,user_id:user.id});
-  }
-  if(result.error) {
-    message('保存失败：'+result.error.message);
-    return;
-  }
-  $('editor').close();
-  await load();
-};
-
-$('delete').onclick=async()=>{
-  if(!active||!confirm(`确定删除「${active.title}」吗？`))return;
-  const {error}=await db.from('recipes').delete()
-    .eq('id',active.id).eq('user_id',user.id);
-  if(error) {
-    message('删除失败：'+error.message);
-    return;
-  }
-  $('detail').close();
-  await load();
-};
-</script>
-</body>
-</html>
+function openEditor(r=null){editing=r;$('editorTitle').textContent=r?'编辑菜谱':'添加菜谱';for(const [id,key] of [['fTitle','title'],['fCategory','category'],['fIngredients','ingredients'],['fInstructions','instructions'],['fNotes','notes'],['fImage','image_url']])$(id).value=r?.[key]||'';$('editor').showModal()}
+$('add').onclick=()=>openEditor();$('edit').onclick=()=>{$('detail').close();openEditor(active)};
+$('recipeForm').onsubmit=async e=>{e.preventDefault();if(!user)return;const row={title:$('fTitle').value.trim(),category:$('fCategory').value.trim(),ingredients:$('fIngredients').value,instructions:$('fInstructions').value,notes:$('fNotes').value,image_url:$('fImage').value.trim()||null};message('正在保存…');let result;if(editing)result=await db.from('recipes').update(row).eq('id',editing.id).eq('user_id',user.id);else result=await db.from('recipes').insert({...row,user_id:user.id});if(result.error){message('保存失败：'+result.error.message);return}$('editor').close();await load()};
+$('delete').onclick=async()=>{if(!active||!confirm(`确定删除「${active.title}」吗？`))return;const {error}=await db.from('recipes').delete().eq('id',active.id).eq('user_id',user.id);if(error){message('删除失败：'+error.message);return}$('detail').close();await load()};
+</script></body></html>
